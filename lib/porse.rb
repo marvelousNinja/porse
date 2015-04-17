@@ -1,5 +1,2 @@
-require "porse/version"
-
-module Porse
-
-end
+require 'porse/version'
+require 'porse/crawler'
