@@ -23,10 +23,10 @@ module Porse
         crawler.process(urls, &block)
       end
 
-      it 'yields once per every url, passing page body' do
+      it 'yields once per every url, passing page' do
         allow(crawler).to receive(:open).and_return(*pages)
 
-        expect { |b| crawler.process(urls, &b) }.to yield_successive_args(*pages.map(&:body))
+        expect { |b| crawler.process(urls, &b) }.to yield_successive_args(*pages)
       end
 
       it 'stops iterating if current page body is equal to previous one' do
