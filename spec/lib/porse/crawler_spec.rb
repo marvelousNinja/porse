@@ -15,6 +15,12 @@ module Porse
         urls.map { |url| double(:page, :body => 'Page Body' + url) }
       end
 
+      it 'configures itself before processing' do
+        expect(crawler).to receive(:configure).with(urls, {})
+
+        crawler.process(urls, &block)
+      end
+
       it 'opens every url' do
         allow(crawler).to receive(:open).and_return(*pages)
 
@@ -45,6 +51,21 @@ module Porse
         expect(crawler.agent).to receive(:get).with(url).and_return(page)
 
         crawler.open(url)
+      end
+    end
+
+    describe '#configure' do
+      it 'opens a homepage before processing if homepage cookies setting is present' do
+        crawler.settings[:homepage_cookies] = true
+        urls = ['http://google.com/?q=1', 'http://google.com/?q=asdfasfa']
+
+        allow(crawler).to receive(:open).and_return(double(:page, :body => 'Page Body'))
+
+        expect(crawler).to receive(:open).with('http://google.com').ordered
+        expect(crawler).to receive(:open).with(urls.first).ordered
+        expect(crawler).to receive(:open).with(urls.last).ordered
+
+        crawler.process(urls) {}
       end
     end
   end

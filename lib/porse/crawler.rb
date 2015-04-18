@@ -2,13 +2,16 @@ require 'mechanize'
 
 module Porse
   class Crawler
-    attr_accessor :agent
+    attr_accessor :agent, :settings
 
-    def initialize
+    def initialize(settings = {})
       @agent = Mechanize.new
+      @settings = settings
     end
 
     def process(urls)
+      configure(urls, settings)
+
       previous_hash = nil
 
       urls.to_enum.each do |url|
@@ -22,6 +25,14 @@ module Porse
 
     def open(url)
       agent.get(url)
+    end
+
+    def configure(urls, settings)
+      if settings[:homepage_cookies]
+        url = urls.to_enum.first
+        uri = URI.parse(url)
+        open("#{uri.scheme}://#{uri.host}")
+      end
     end
   end
 end
